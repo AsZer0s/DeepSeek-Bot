@@ -5,6 +5,7 @@ import { createElement as h, Fragment, useCallback, useEffect, useRef, useState 
 import { useEscape } from './overlay-hooks.js'
 import { ArrowUpIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, CloseIcon, DotsIcon, MemoryIcon, TrashIcon } from './icons.js'
 import { dateLocale, hostText, t } from './i18n.js'
+import { BotMark } from './mark.js'
 import { summaryBlocks } from './text.js'
 import { useLinger } from './motion.js'
 
@@ -270,8 +271,10 @@ export function MemoryDialog({ bot, actions, leaving = false }) {
     h('div', { className: 'bt-mem', role: 'dialog', 'aria-modal': true, 'aria-label': t("{name}'s memory", { name: bot.name }) },
       h('div', { className: 'bt-mem-head' },
         page === 'entries' ? h('button', { type: 'button', className: 'bt-icon-btn', 'aria-label': t('Back to the summary'), onClick: backToSummary }, h(ChevronLeftIcon)) : null,
-        h('h2', null, page === 'entries' ? t('All entries') : t('Memory summary')),
-        h('span', { className: 'bt-mem-status' }, page === 'summary' ? [bot.name, status].filter(Boolean).join(' · ') : status),
+        h('span', { className: 'bt-mem-mobile-bot', 'aria-hidden': true }, h(BotMark, { bot, size: 30 })),
+        h('div', { className: 'bt-mem-heading' },
+          h('h2', null, page === 'entries' ? t('All entries') : t('Memory summary')),
+          h('span', { className: 'bt-mem-status' }, page === 'summary' ? [bot.name, status].filter(Boolean).join(' · ') : status)),
         h('span', { className: 'bt-mem-head-gap' }),
         h('button', { ref: dotsRef, type: 'button', className: 'bt-icon-btn', 'aria-label': t('Memory options'), 'aria-haspopup': 'menu', 'aria-expanded': menu, onClick: () => setMenu(value => !value) }, h(DotsIcon)),
         h('button', { type: 'button', className: 'bt-icon-btn', 'aria-label': t('Close memory'), onClick: close }, h(CloseIcon)),

@@ -1,7 +1,7 @@
 import { createElement as h, Fragment, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 import { currentPart } from './text.js'
-import { CheckIcon, SlidersIcon } from './icons.js'
+import { CheckIcon, CloseIcon, SlidersIcon } from './icons.js'
 import { BotMark } from './mark.js'
 import { openHarnessOnboarding, openHarnessSettings } from './sidebar.js'
 import { SPRING_POP, SPRING_SHAPE, spring, useLinger } from './motion.js'
@@ -168,12 +168,20 @@ export function ModelMenu({ bot, roster, actions, run, wide = false, onPick, onP
         ? (effortLabel === undefined ? shown.provider : `${shown.provider} · ${effortLabel}`)
         : t('{provider} · not available', { provider: shown.provider })) : null),
     h('svg', { className: 'bt-model-caret', width: 12, height: 12, viewBox: '0 0 20 20', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true }, h('path', { d: 'M5.5 8l4.5 4.5L14.5 8' }))),
-    shownPlace ? createPortal(h('div', { ref: menu, className: `bt-menu bt-model-menu${shownPlace.bottom !== undefined ? ' bt-menu-up' : ''}`, role: 'menu', 'aria-label': t('Model for {name}', { name: bot.name }), style: shownPlace, 'data-leaving': leaving || undefined },
-      models.length > 0 ? h(ModelRows, { roster, current, onPick: pick })
-        : h('div', { className: 'bt-model-none' }, t('No models are set up in DeepSeek Harness yet.')),
-      effortRows(reasoning).length > 0 ? h(EffortRows, { reasoning, current: picked, onPick: pickEffort }) : null,
-      h('div', { className: 'bt-menu-sep', role: 'separator' }),
-      h('button', { type: 'button', role: 'menuitem', onClick: () => { close(); openHarnessSettings() } }, h(SlidersIcon), h('span', { className: 'bt-menu-label' }, t('Models and providers…')))), document.body) : null)
+    shownPlace ? createPortal(h(Fragment, null,
+      h('button', { type: 'button', className: 'bt-model-scrim', 'aria-label': t('Close'), onClick: close, 'data-leaving': leaving || undefined }),
+      h('div', { ref: menu, className: `bt-menu bt-model-menu${shownPlace.bottom !== undefined ? ' bt-menu-up' : ''}`, role: 'menu', 'aria-label': t('Model for {name}', { name: bot.name }), style: shownPlace, 'data-leaving': leaving || undefined },
+        h('div', { className: 'bt-model-mobile-head', role: 'presentation' },
+          h('span', { className: 'bt-model-mobile-bot' }, h(BotMark, { bot, size: 28 })),
+          h('span', { className: 'bt-model-mobile-copy' },
+            h('strong', null, t('Model for {name}', { name: bot.name })),
+            h('span', null, shown?.name ?? t('Choose a model'))),
+          h('button', { type: 'button', className: 'bt-model-mobile-close', 'aria-label': t('Close'), onClick: close }, h(CloseIcon))),
+        models.length > 0 ? h(ModelRows, { roster, current, onPick: pick })
+          : h('div', { className: 'bt-model-none' }, t('No models are set up in DeepSeek Harness yet.')),
+        effortRows(reasoning).length > 0 ? h(EffortRows, { reasoning, current: picked, onPick: pickEffort }) : null,
+        h('div', { className: 'bt-menu-sep', role: 'separator' }),
+        h('button', { type: 'button', role: 'menuitem', onClick: () => { close(); openHarnessSettings() } }, h(SlidersIcon), h('span', { className: 'bt-menu-label' }, t('Models and providers…'))))), document.body) : null)
 }
 
 // The card a Bot's chat opens on while the Bot has no model, or has one that is no
@@ -273,6 +281,7 @@ export const MODEL_CSS = `
 .bt-model-caret{flex:none;color:var(--bt-ink-3);transition:${spring(SPRING_SHAPE, 'transform')}}
 .bt-model-trigger[aria-expanded=true] .bt-model-caret{transform:rotate(180deg)}
 .bt-model-menu{overflow-y:auto;scrollbar-width:thin}
+.bt-model-scrim,.bt-model-mobile-head{display:none}
 .bt-model-group{flex:none;padding:8px 8px 2px;font-size:11px;line-height:14px;font-weight:500;color:var(--bt-ink-3);text-transform:none}
 .bt-model-group:first-child{padding-top:2px}
 .bt-model-tick{flex:none;width:16px;height:16px;display:inline-flex;color:var(--bt-ink-2)}
@@ -291,6 +300,23 @@ export const MODEL_CSS = `
 .bt-model-chip:disabled{cursor:default}
 .bt-model-chip:disabled:not([aria-busy]){opacity:.5}
 .bt-model-error{margin-left:30px}
+@media (max-width:700px){
+.bt-model-scrim{display:block;position:fixed;inset:var(--dsh-frame-chrome-top,0px) 0 0;z-index:88;border:0;padding:0;background:rgba(0,0,0,.5);animation:bt-fade-in .16s ease-out}
+.bt-model-scrim[data-leaving]{opacity:0;transition:opacity .12s ease-in}
+.bt-model-menu,.bt-model-menu.bt-menu-up{position:fixed;z-index:89;left:0!important;right:0!important;top:auto!important;bottom:0!important;width:100%!important;max-width:none;max-height:min(72vh,620px)!important;box-sizing:border-box;padding:8px 10px calc(10px + env(safe-area-inset-bottom));border:0;border-top:.5px solid var(--bt-line-2);border-radius:22px 22px 0 0;box-shadow:0 -18px 48px rgba(0,0,0,.24);overflow-x:hidden;transform:none;transform-origin:bottom center;animation:bt-model-sheet-in ${SPRING_SHAPE.duration}ms ${SPRING_SHAPE.easing},bt-veil-in .16s ease-out}
+.bt-model-menu[data-leaving]{animation:bt-model-sheet-out .12s ease-in forwards}
+.bt-model-mobile-head{position:sticky;top:-8px;z-index:1;display:flex;align-items:center;gap:10px;min-height:58px;margin:-2px -2px 6px;padding:6px 4px 8px;background:var(--bt-main);border-bottom:.5px solid var(--bt-line)}
+.bt-model-mobile-bot{display:inline-flex;flex:none}
+.bt-model-mobile-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:1px}
+.bt-model-mobile-copy strong{overflow:hidden;font-size:16px;line-height:22px;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+.bt-model-mobile-copy>span{overflow:hidden;font-size:12px;line-height:16px;color:var(--bt-ink-3);text-overflow:ellipsis;white-space:nowrap}
+.bt-model-menu .bt-model-mobile-close{display:inline-flex;align-items:center;justify-content:center;flex:none;width:40px;min-width:40px;height:40px;min-height:40px;padding:0;border:0;border-radius:50%;background:var(--bt-hover);color:var(--bt-ink-2)}
+.bt-model-menu>.bt-model-group{padding:12px 10px 5px;font-size:12px}
+.bt-model-menu>button[role=menuitemradio],.bt-model-menu>button[role=menuitem]{min-height:48px;padding:10px 12px;border-radius:12px;font-size:15px}
+.bt-model-menu .bt-model-tick{width:20px;height:20px}
+@keyframes bt-model-sheet-in{from{translate:0 100%}}
+@keyframes bt-model-sheet-out{to{translate:0 100%;opacity:.7}}
+}
 @keyframes bt-model-in{from{opacity:0;transform:translateY(6px)}}
 .bt-model-spin{flex:none;width:14px;height:14px;border-radius:50%;border:1.5px solid var(--bt-line-2);border-top-color:var(--bt-ink-2);animation:bt-model-spin .7s linear infinite}
 @keyframes bt-model-spin{to{transform:rotate(360deg)}}

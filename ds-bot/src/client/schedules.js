@@ -266,5 +266,11 @@ export const SCHEDULE_CSS = `
 .bt-task-line svg{flex:none;color:var(--bt-ink-3)}
 .bt-task-line-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bt-task-line-when{flex:none;font-size:12px;color:var(--bt-ink-3)}
+@media (max-width:700px){
+.bt-task-bot{min-width:0;max-width:56%;font-size:16px}
+.bt-task-days{width:100%;justify-content:space-between;gap:2px}
+.bt-task-day{width:36px;height:36px}
+.bt-task-foot .bt-send{min-height:40px;padding:0 16px}
+}
 @media (prefers-reduced-motion:reduce){.bt-task-form{animation:none}}
 `

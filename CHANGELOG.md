@@ -6,6 +6,7 @@ All notable changes to DS Bot are listed here. The format follows [Keep a Change
 
 ### Added
 
+- On narrow screens, the Bot conversation fills the window and the team sidebar becomes a touch-friendly drawer. Settings, Bot details, model and thinking-level selection, memory, usage, schedules, reactions, message actions and the composer adapt to phone-sized viewports.
 - Voice chat uses the local speech recognition of the official DSH Voice Input plugin (SenseVoice) when the plugin is on, and the browser's speech recognition otherwise. When the plugin has no speech model yet, the voice panel opens its settings.
 - The update card also offers DSH updates, but only the DSH version that the newest DS Bot release was verified with (`dsBot.verifiedDsh`). A DSH installed with npm updates in one click; DSH Desktop opens its own update panel.
 - Each Bot can pick a thinking level with its model, in the model menu or when the Bot is created. **Default** uses the model's own level.
