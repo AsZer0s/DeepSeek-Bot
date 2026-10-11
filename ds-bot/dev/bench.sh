@@ -33,6 +33,16 @@ fi
 
 alive() { [ -f "$HOME_DIR/$1.pid" ] && kill -0 "-$(cat "$HOME_DIR/$1.pid")" 2>/dev/null; }
 
+wait_pid() {
+  file="$HOME_DIR/$1.pid"
+  i=0
+  until [ -s "$file" ] && kill -0 "-$(cat "$file")" 2>/dev/null; do
+    i=$((i + 1))
+    [ $i -lt 50 ] || return 1
+    sleep 0.1
+  done
+}
+
 # Each process runs in its own session (setsid), so its pid is also its process group, which
 # outlives it: pnpm exits before the dsh it started. dash's kill takes no `--`.
 stop_one() {
@@ -84,15 +94,21 @@ start() {
   ensure_profile
   write_overlay
   if ! alive mock; then
+    rm -f "$HOME_DIR/mock.pid"
     (cd "$PLUGIN" && MOCK_PORT="$MOCK_PORT" MOCK_DELAY_MS="${MOCK_DELAY_MS:-300}" MOCK_LOG="$HOME_DIR/mock.jsonl" \
-      setsid node dev/mock-llm.mjs "$HOME_DIR" </dev/null >"$HOME_DIR/mock.out" 2>&1 & echo $! >"$HOME_DIR/mock.pid")
+      setsid sh -c 'echo $$ >"$1"; shift; exec "$@"' sh "$HOME_DIR/mock.pid" \
+      node dev/mock-llm.mjs "$HOME_DIR" </dev/null >"$HOME_DIR/mock.out" 2>&1 &)
+    wait_pid mock || { echo "mock did not start; see $HOME_DIR/mock.out" >&2; exit 1; }
   fi
   if ! alive web; then
     log="$HOME_DIR/web.log"
     rm -f "$log"
+    rm -f "$HOME_DIR/web.pid"
     (cd "$DSH_HARNESS" && DSH_HOME="$HOME_DIR" DEEPSEEK_BASE_URL="http://127.0.0.1:$MOCK_PORT/v1" DEEPSEEK_API_KEY=mock-key \
-      setsid pnpm -s dsh --profile web --patch apps/web/tests/pin-browse-picker.overlay.yml --patch "$HOME_DIR/bench.patch.yml" \
-      --no-open --port "$WEB_PORT" </dev/null >"$log" 2>&1 & echo $! >"$HOME_DIR/web.pid")
+      setsid sh -c 'echo $$ >"$1"; shift; exec "$@"' sh "$HOME_DIR/web.pid" \
+      pnpm -s dsh --profile web --patch apps/web/tests/pin-browse-picker.overlay.yml --patch "$HOME_DIR/bench.patch.yml" \
+      --no-open --port "$WEB_PORT" </dev/null >"$log" 2>&1 &)
+    wait_pid web || { echo "dsh web did not start; see $log" >&2; exit 1; }
     i=0
     until grep -q "dsh web: http" "$log" 2>/dev/null; do
       i=$((i + 1))

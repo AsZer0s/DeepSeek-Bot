@@ -716,5 +716,18 @@ button.bt-us-row:hover{background:var(--bt-hover)}
 @keyframes bt-us-ring{from{stroke-dasharray:0 ${Math.ceil(RING)}}}
 @keyframes bt-us-pulse{50%{opacity:.25}}
 @keyframes bt-us-shine{from{background-position:200% 0}to{background-position:-200% 0}}
+@media (max-width:700px){
+.bt-us-stats{grid-template-columns:1fr 1fr}
+.bt-us-stat{padding:14px}
+.bt-us-stat:nth-child(3){border-left:0}
+.bt-us-stat:nth-child(n+3){border-top:1px solid var(--bt-line)}
+.bt-us-stat-main .bt-us-stat-value{font-size:28px;line-height:34px}
+.bt-us-pair{grid-template-columns:1fr}
+.bt-us-card{padding:13px 12px 15px}
+.bt-us-profile{gap:14px}
+.bt-us-ring{width:78px;height:78px}
+.bt-us-plot,.bt-us-ticks{margin-left:32px}
+.bt-us-heat-months,.bt-us-heat-grid{gap:2px}
+}
 @media (prefers-reduced-motion:reduce){.bt-us *,.bt-us *::before{animation:none!important;transition:none!important}}
 `

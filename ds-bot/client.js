@@ -40,6 +40,9 @@ var ZH = {
   Search: "搜索",
   "New chat": "新对话",
   "New…": "新建",
+  "Open navigation": "打开导航",
+  "Close navigation": "关闭导航",
+  "Team navigation": "团队导航",
   "Animation": "动画",
   "Bot animation": "Bot 动画",
   "Quiet": "安静",
@@ -1737,6 +1740,7 @@ body[data-bt-motion=quiet] .bt-mark[data-poke]{cursor:default}
 .bt-stack-more{font-size:11px;line-height:16px;color:var(--bt-ink-3);margin-left:3px!important}
 
 .bt-side{display:flex;flex-direction:column;min-height:0;flex:1 1 auto;gap:2px;padding:0 12px 8px 0;color:var(--bt-ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+.bt-mobile-side-head,.bt-mobile-actions,.bt-mobile-side-foot,.bt-mobile-nav,.bt-mobile-scrim{display:none}
 .bt-side-top{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:6px 5px 0 0}
 .bt-brand{display:inline-flex;align-items:center;gap:6px;margin-right:auto;padding:4px 8px 4px 4px;border:0;border-radius:8px;background:none;cursor:pointer;font-family:inherit;font-size:15px;line-height:20px;font-weight:600;letter-spacing:-.01em;color:var(--bt-ink);white-space:nowrap}
 .bt-brand-whale{display:inline-flex;color:var(--bt-accent)}
@@ -2111,6 +2115,72 @@ button.bt-set-row:hover{background:var(--bt-hover)}
 [class*="_footArea"] button[aria-label="Settings"]{width:auto!important;padding:0!important;background:none!important;border-radius:50%!important;height:auto!important}
 [class*="_widthHandle"]{display:none!important}
 
+/* On a phone the conversation owns the screen. The shell sidebar becomes a modal
+   team drawer, while DS Bot's overlays turn into edge-to-edge mobile pages. */
+@media (max-width:700px){
+body{overscroll-behavior:none}
+[class*="_frame"]:has(.bt-side){grid-template-columns:0 minmax(0,1fr) 0!important}
+[class*="_sidebarCol"]:has(.bt-side){width:0!important;min-width:0!important;overflow:visible!important;z-index:80!important}
+[class*="_collapsed"]:has(.bt-side){width:0!important;min-width:0!important;flex-basis:0!important;margin:0!important;padding:0!important;background:transparent!important}
+[class*="_centerCol"]{min-width:0!important}
+[class*="_footArea"]:has(.bt-account),[class*="_footArea"]:has(.bt-foot-account){display:none!important}
+.bt-mobile-scrim{display:block;position:fixed;inset:var(--dsh-frame-chrome-top,0px) 0 0;z-index:78;border:0;padding:0;background:rgba(0,0,0,.5);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility .2s}
+.bt-mobile-scrim[data-open]{opacity:1;visibility:visible;pointer-events:auto}
+.bt-side.bt-rail{position:fixed;z-index:79;inset:var(--dsh-frame-chrome-top,0px) auto 0 0;width:min(88vw,360px);max-width:100vw;box-sizing:border-box;align-items:stretch;gap:0;padding:max(10px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));background:var(--bt-sidebar);border-right:.5px solid var(--bt-line-2);box-shadow:none;transform:translateX(-105%);transition:transform ${SPRING_SHAPE.duration}ms ${SPRING_SHAPE.easing},box-shadow 0s linear ${SPRING_SHAPE.duration}ms;overflow:hidden}
+.bt-side.bt-rail[data-mobile-open]{transform:none;box-shadow:16px 0 48px rgba(0,0,0,.2);transition:transform ${SPRING_SHAPE.duration}ms ${SPRING_SHAPE.easing},box-shadow 0s}
+.bt-mobile-side-head{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 2px 10px}
+.bt-mobile-side-head .bt-brand{margin-right:auto;padding-left:4px;font-size:16px}
+.bt-mobile-side-head .bt-icon-btn{width:40px;height:40px;background:var(--bt-hover)}
+.bt-side.bt-rail>.bt-round,.bt-side.bt-rail>.bt-update{display:none}
+.bt-mobile-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-bottom:12px}
+.bt-mobile-action{display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:0 12px;border:.5px solid var(--bt-line-2);border-radius:14px;background:var(--bt-main);color:var(--bt-ink);font:inherit;font-size:14px;cursor:pointer}
+.bt-mobile-action:active{background:var(--bt-active);scale:.98}
+.bt-mobile-action svg{width:17px;height:17px}
+.bt-side.bt-rail .bt-list{gap:4px;padding:2px 0}
+.bt-side.bt-rail .bt-row{justify-content:flex-start;gap:11px;min-height:58px;padding:9px 10px;border-radius:14px}
+.bt-side.bt-rail .bt-row-body{display:flex}
+.bt-side.bt-rail .bt-unread{display:block;margin-left:auto}
+.bt-side.bt-rail .bt-pin{position:static;margin-left:2px}
+.bt-side.bt-rail .bt-agent-sub-in{margin-left:46px}
+.bt-mobile-side-foot{display:flex;align-items:center;min-height:52px;padding:10px 4px 0;border-top:.5px solid var(--bt-line)}
+.bt-mobile-side-foot .bt-account{width:42px;height:42px}
+.bt-mobile-side-foot .bt-you{width:42px;height:42px}
+.bt-mobile-nav{pointer-events:auto;position:absolute;display:inline-flex;align-items:center;justify-content:center;left:10px;top:0;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:var(--bt-main);color:var(--bt-ink-2);box-shadow:0 2px 8px -1px rgba(0,0,0,.06),0 0 0 .5px var(--bt-line-2);cursor:pointer}
+.bt-head{width:100%}
+.bt-pill{max-width:calc(100% - 112px)}
+.bt-pill-go{display:none}
+.bt-panel{top:var(--dsh-frame-chrome-top,0px);width:100vw!important;border-left:0;z-index:76}
+.bt-panel-grip{display:none}
+.bt-drawer-top{padding-top:max(12px,env(safe-area-inset-top))}
+.bt-pane{left:0!important;width:100vw!important}
+.bt-dialog .bt-head{height:56px}
+.bt-settings-layer{align-items:stretch;justify-content:stretch}
+.bt-settings{--bt-set-w:100vw!important;--bt-set-h:100%!important;width:100vw;height:100%;border:0;border-radius:0;box-shadow:none;flex-direction:column}
+.bt-settings-nav{width:100%;height:auto;flex:none;flex-direction:row;gap:4px;padding:max(12px,env(safe-area-inset-top)) 52px 10px 12px;border:0;border-bottom:.5px solid var(--bt-line);overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity}
+.bt-settings-nav::-webkit-scrollbar{display:none}
+.bt-settings-item{flex:none;min-height:40px;padding:8px 12px;border-radius:999px;scroll-snap-align:start}
+.bt-settings-item[aria-current=page]{background:var(--bt-active)}
+.bt-settings-nav>.bt-thumb{display:none}
+.bt-settings-shell{margin:0 0 0 6px}
+.bt-settings-main{width:100%;height:auto;flex:1 1 auto;min-height:0}
+.bt-settings-head{min-height:52px;box-sizing:border-box;padding:10px 56px 6px 16px}
+.bt-settings-head h2{font-size:17px}
+.bt-settings-scroll{padding:10px 14px calc(24px + env(safe-area-inset-bottom));gap:18px}
+.bt-settings-close{top:max(12px,env(safe-area-inset-top));right:10px;width:40px;height:40px;z-index:2}
+.bt-settings-usage[data-off]{left:0;width:100%}
+.bt-set-row{gap:10px;padding:12px}
+.bt-set-control{max-width:56%;flex-wrap:wrap;justify-content:flex-end}
+.bt-avedit{position:fixed;inset:auto 10px calc(10px + env(safe-area-inset-bottom));width:auto;max-height:82vh;overflow-y:auto;transform:none}
+.bt-menu{max-width:calc(100vw - 20px)}
+.bt-account-menu{left:10px!important;right:10px!important;bottom:calc(10px + env(safe-area-inset-bottom))!important;width:auto;min-width:0;z-index:82!important}
+.bt-palette{top:auto;bottom:0;left:0;width:100%;max-height:86%;border-radius:20px 20px 0 0;transform:none;padding-bottom:env(safe-area-inset-bottom)}
+.bt-palette-list{height:min(62vh,520px)}
+.bt-react-strip button{width:40px;height:40px}
+.bt-icon-btn{min-width:40px;min-height:40px}
+.bt-soft{min-height:40px}
+.bt-member .bt-mini,.bt-member .bt-x,.bt-bcard-x{opacity:1}
+}
+
 .bt-voice-pane{flex-direction:column;align-items:center;justify-content:center;animation:bt-fade .2s ease-out}
 .bt-voice-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;max-width:560px;text-align:center}
 .bt-voice-orb{position:relative;width:200px;height:200px;display:grid;place-items:center;margin-bottom:8px}
@@ -2285,13 +2355,15 @@ body[data-ds-dark-theme] .bt-theme-chip i{background:var(--da)}
 .bt-mem-row>svg{flex:none;color:var(--bt-ink-2)}
 .bt-mem-row-copy{flex:1;text-align:left}
 .bt-mem-row-go{display:inline-flex;align-items:center;gap:2px;color:var(--bt-ink-3);font-size:12px}
-.bt-mem-layer{position:fixed;inset:var(--dsh-frame-chrome-top,0px) 0 0;z-index:61;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+.bt-mem-layer{position:fixed;inset:var(--dsh-frame-chrome-top,0px) 0 0;z-index:90;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
 .bt-mem-scrim{animation:bt-fade .2s ease-out}
 .bt-mem{position:relative;width:min(680px,calc(100vw - 48px));height:min(760px,calc(100vh - 2*max(32px,var(--dsh-frame-overlay-top,32px))));background:var(--bt-main);border-radius:20px;border:.5px solid var(--bt-line-2);box-shadow:0 24px 80px rgba(0,0,0,.24);display:flex;flex-direction:column;overflow:hidden;color:var(--bt-ink);animation:bt-dialog-rise ${SPRING_SHAPE.duration}ms ${SPRING_SHAPE.easing},bt-veil-in .2s ease-out}
 .bt-mem-head{position:relative;display:flex;align-items:center;gap:8px;height:60px;flex:none;padding:0 14px 0 24px;border-bottom:.5px solid var(--bt-line);box-sizing:border-box}
 .bt-mem-head .bt-icon-btn{width:32px;height:32px;flex:none}
 .bt-mem-head [aria-haspopup] svg{width:18px;height:18px;stroke-width:2.6}
 .bt-mem-head>.bt-icon-btn:first-child{margin-left:-10px}
+.bt-mem-mobile-bot{display:none}
+.bt-mem-heading{display:flex;align-items:center;gap:8px;min-width:0}
 .bt-mem-head h2{margin:0;font-size:17px;line-height:24px;font-weight:600;white-space:nowrap}
 .bt-mem-status{font-size:13px;line-height:18px;color:var(--bt-ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;font-variant-numeric:tabular-nums}
 .bt-mem-head-gap{flex:1}
@@ -2362,7 +2434,26 @@ body[data-ds-dark-theme] .bt-theme-chip i{background:var(--da)}
 .bt-mem-send>*{animation:bt-check-pop ${SPRING_POP.duration}ms ${SPRING_POP.easing}}
 .bt-mem-spin{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;box-sizing:border-box;animation:bt-mem-spin .7s linear infinite}
 @keyframes bt-mem-spin{to{transform:rotate(360deg)}}
-@media (max-width:640px){.bt-mem{width:100vw;height:100%;border-radius:0;border:0}.bt-mem-body{padding:18px 18px 20px}.bt-mem-foot{padding:8px 12px 12px}}
+@media (max-width:640px){
+.bt-mem-layer{inset:0}
+.bt-mem{width:100vw;height:100vh;height:100dvh;border-radius:0;border:0;box-shadow:none}
+.bt-mem-head{height:auto;min-height:68px;padding:max(8px,env(safe-area-inset-top)) 10px 8px 14px;gap:10px}
+.bt-mem-head>.bt-icon-btn:first-child{margin-left:0}
+.bt-mem-head .bt-icon-btn{width:40px;height:40px}
+.bt-mem-mobile-bot{display:inline-flex;flex:none}
+.bt-mem-heading{flex:1;flex-direction:column;align-items:flex-start;gap:0}
+.bt-mem-head h2{max-width:100%;overflow:hidden;font-size:16px;line-height:22px;text-overflow:ellipsis}
+.bt-mem-status{max-width:100%;font-size:12px;line-height:16px}
+.bt-mem-head-gap{display:none}
+.bt-mem-menu{position:fixed;z-index:92;top:max(62px,calc(env(safe-area-inset-top) + 54px));right:10px;left:10px;min-width:0}
+.bt-mem-menu button{min-height:46px;font-size:14px}
+.bt-mem-body{padding:18px 18px 20px}
+.bt-mem-foot{padding:8px 10px calc(10px + env(safe-area-inset-bottom));background:var(--bt-main)}
+.bt-mem-ask{height:54px;padding-left:18px}
+.bt-mem-input{font-size:16px}
+.bt-mem-send{width:38px;height:38px}
+.bt-mem-reply{max-height:32vh}
+}
 @media (prefers-reduced-motion:reduce){.bt-mem,.bt-mem-scrim,.bt-mem-summary>*,.bt-mem-empty,.bt-mem-reply,.bt-mem-skel-block span,.bt-mem-entries,.bt-mem-send>*,.bt-mem-changes li svg{animation:none}}
 
 .bt-thumb{position:absolute;left:0;top:0;z-index:0;pointer-events:none;transition:opacity .14s ease}
@@ -2562,6 +2653,44 @@ div:has(> nav [class*="_marks"]){display:none!important}
 .bt-earlier .bt-event{margin:4px 0}
 .bt-part-line{display:flex;align-items:center;gap:10px;margin:10px 0 6px;font-size:11px;line-height:14px;color:var(--bt-ink-3)}
 .bt-part-line::before,.bt-part-line::after{content:"";flex:1;height:1px;background:var(--bt-line)}
+@media (max-width:700px){
+header[class*="_header"]:has(.bt-head){padding-top:max(8px,env(safe-area-inset-top))!important}
+header[class*="_header"]:has(.bt-head)>[class*="_headerLeading"]{display:none!important}
+[class*="_scroll"]:has(> [class*="_column"]){padding:64px 10px 12px!important}
+[class*="_scroll"]>[class*="_column"]{width:100%!important;max-width:none!important}
+[class*="_root"]:has(> [data-composer-card]){padding:0 8px calc(8px + env(safe-area-inset-bottom))!important}
+[data-composer-card]{min-height:50px;border-radius:25px!important;padding:9px!important}
+[data-composer-card]:has(> [data-slot="conversation.input.attachments"] *),
+[data-composer-card]:has([data-composer-input] br + *),
+[data-composer-card]:has([data-composer-input] > :nth-child(2)){border-radius:20px!important}
+[data-composer-card]>[data-input-scroll]{padding:0 7px!important}
+[data-composer-card]>[data-input-scroll]{scrollbar-width:none}
+[data-composer-card]>[data-input-scroll]::-webkit-scrollbar{display:none}
+[data-composer-card] [data-composer-input]{min-height:28px;padding:2px 0!important;font-size:16px!important;line-height:24px!important}
+[data-composer-placeholder]::after{font-size:15px;line-height:28px}
+.bt-plus,.bt-mic,.bt-voice,[data-composer-card] button[class*="_primary"]{width:34px!important;height:34px!important}
+[data-composer-card] [class*="_standardControls"],
+[data-composer-card] [class*="_trailing"]{gap:5px}
+.bt-bubble,.bt-msg{max-width:calc(100vw - 62px)}
+.bt-astack{padding-left:4px}
+.bt-astack[data-lead]>.bt-msg{max-width:calc(100vw - 34px)}
+.bt-think{max-width:calc(100vw - 34px)}
+.bt-q,.bt-q-raised{width:100%;max-width:100%}
+.bt-q-inline .bt-q{max-width:calc(100vw - 28px)}
+.bt-model-dock{padding-bottom:8px}
+.bt-model-chips{margin-left:30px;max-width:calc(100% - 30px);max-height:min(34vh,250px)}
+.bt-model-choice-chips{gap:8px}
+.bt-model-chip{min-height:40px;padding:8px 13px}
+.bt-tools,[data-chat-flow-kind=user] [class*="_actions"]{opacity:1!important;visibility:visible!important}
+.bt-msg{padding-bottom:34px}
+.bt-tools{top:calc(100% + 2px);left:auto;right:0;margin-left:0;transform:none}
+.bt-tools::after{display:none}
+.bt-tool,[data-chat-flow-kind=user] [class*="_actions"] button{width:32px;height:32px}
+.bt-react-strip{left:10px!important;right:10px!important;width:auto;max-width:none;display:grid;grid-template-columns:repeat(6,minmax(40px,1fr));gap:4px;padding:5px;border-radius:18px;transform:translateY(-100%);overflow:hidden}
+.bt-react-strip button{width:100%;height:40px}
+[data-conversation-scroll] [class*="_toBottomSlot"]{bottom:calc(var(--dsh-composer-height,152px) + 6px)!important}
+.bt-news{max-width:calc(100vw - 20px)}
+}
 `;
 function installStyles(text, tag) {
   const style = document.createElement("style");
@@ -2800,6 +2929,13 @@ function PlusIcon() {
 }
 function SearchIcon() {
   return (0, import_react3.createElement)("svg", { width: 16, height: 16, viewBox: "0 0 20 20", "aria-hidden": true }, (0, import_react3.createElement)("circle", { cx: 8.5, cy: 8.5, r: 5.5, stroke: "currentColor", strokeWidth: 1.6, fill: "none" }), (0, import_react3.createElement)("path", { d: "M13 13l4 4", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round" }));
+}
+function MenuIcon() {
+  return (0, import_react3.createElement)(
+    "svg",
+    { width: 18, height: 18, viewBox: "0 0 20 20", fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round", "aria-hidden": true },
+    (0, import_react3.createElement)("path", { d: "M4 6h12M4 10h12M4 14h8" })
+  );
 }
 function PeopleIcon() {
   return (0, import_react3.createElement)(
@@ -4372,7 +4508,7 @@ function useMarkedUnread(id, active, marked, actions) {
   }, [active, marked]);
 }
 var PinMark = () => (0, import_react8.createElement)("span", { className: "bt-pin", "aria-hidden": true }, (0, import_react8.createElement)(PinMarkIcon));
-function BotRow({ bot, roster, actions, useSessions, useSessionStatus, useSessionRetainInfo, useActivity, wide, marked }) {
+function BotRow({ bot, roster, actions, useSessions, useSessionStatus, useSessionRetainInfo, useActivity, wide, mobile = false, marked }) {
   const id = bot.id;
   const part = currentPart(bot);
   const preview = useSessions((list) => previewOf(list, part, roster.exchangeTurns[part]));
@@ -4392,7 +4528,7 @@ function BotRow({ bot, roster, actions, useSessions, useSessionStatus, useSessio
   };
   const pinned = bot.pinned === true && !tile;
   const label = [bot.name, main ? t("Main Bot") : "", pinned ? t("Pinned") : "", running ? t("Working") : "", alert ? t("Waiting for your answer") : "", unread ? t("Unread activity") : ""].filter(Boolean).join(", ");
-  if (tile && wide) {
+  if (tile && wide && !mobile) {
     return (0, import_react8.createElement)("div", { className: "bt-tile-wrap" }, (0, import_react8.createElement)(
       "button",
       {
@@ -4633,6 +4769,7 @@ function TeamSidebar(props) {
   const { wide, useRoster, useUi, useSessions, actions } = props;
   const listRef = (0, import_react8.useRef)(null);
   const roster = useRoster((value) => value);
+  const mobileOpen = useUi((value) => value.mobileNav === true);
   const markedUnread = useUi((value) => value.unread);
   props.useRegistry((value) => value);
   const updated = useSessions((list) => {
@@ -4651,9 +4788,10 @@ function TeamSidebar(props) {
     return entries2.sort((a, b) => Number(Boolean(b.item.pinned)) - Number(Boolean(a.item.pinned)) || b.at - a.at);
   }, [roster, updated]);
   const main = roster.byId[roster.mainBotId];
-  useListGlide(listRef, wide, order.map((entry) => entry.item.id).join(","));
+  const listWide = wide || mobileOpen;
+  useListGlide(listRef, listWide, order.map((entry) => entry.item.id).join(","));
   useLandOnMainBot(roster, useSessions, actions);
-  const rowProps = { roster, actions, useSessions, useUi, useSessionStatus: props.useSessionStatus, useSessionRetainInfo: props.useSessionRetainInfo, useActivity: props.useActivity, wide };
+  const rowProps = { roster, actions, useSessions, useUi, useSessionStatus: props.useSessionStatus, useSessionRetainInfo: props.useSessionRetainInfo, useActivity: props.useActivity, wide: listWide, mobile: !wide && mobileOpen };
   const typeToSearch = (event) => {
     if (event.defaultPrevented || event.key.length !== 1 || event.key === " " || event.metaKey || event.ctrlKey || event.altKey || event.nativeEvent.isComposing) return;
     if (event.target instanceof Element && event.target.closest("input,textarea,[contenteditable]")) return;
@@ -4661,27 +4799,45 @@ function TeamSidebar(props) {
     actions.openPalette(event.key);
   };
   return (0, import_react8.createElement)(
-    "div",
-    { className: wide ? "bt-side" : "bt-side bt-rail", onKeyDown: typeToSearch },
-    wide ? (0, import_react8.createElement)(
-      "div",
-      { className: "bt-side-top" },
-      (0, import_react8.createElement)("span", { className: "bt-brand" }, (0, import_react8.createElement)(BrandMark, { size: 22 }), (0, import_react8.createElement)(BrandName)),
-      (0, import_react8.createElement)(UpdateButton, { useUpdate: props.useUpdate, actions }),
-      (0, import_react8.createElement)("button", { type: "button", className: "bt-round", "aria-label": t("Search"), title: t("Search"), onClick: () => actions.openPalette() }, (0, import_react8.createElement)(SearchIcon)),
-      (0, import_react8.createElement)("button", { type: "button", className: "bt-round", "aria-label": t("New…"), title: t("New…"), onClick: () => actions.openNewChat("new") }, (0, import_react8.createElement)(PlusIcon))
-    ) : (0, import_react8.createElement)(
-      import_react8.Fragment,
-      null,
-      (0, import_react8.createElement)(UpdateButton, { useUpdate: props.useUpdate, actions }),
-      (0, import_react8.createElement)("button", { type: "button", className: "bt-round", "aria-label": t("New…"), title: t("New…"), onClick: () => actions.openNewChat("new") }, (0, import_react8.createElement)(PlusIcon))
-    ),
-    wide && roster.readOnly ? (0, import_react8.createElement)("div", { className: "bt-hint bt-read-only", role: "status" }, hostText(roster.readOnly)) : null,
+    import_react8.Fragment,
+    null,
+    (0, import_react_dom3.createPortal)((0, import_react8.createElement)("button", { type: "button", className: "bt-mobile-scrim", "data-open": mobileOpen || void 0, "aria-label": t("Close navigation"), tabIndex: mobileOpen ? 0 : -1, onClick: actions.closeMobileNav }), document.body),
     (0, import_react8.createElement)(
       "div",
-      { ref: listRef, className: "bt-list", role: "region", "aria-label": t("Bot list") },
-      main ? (0, import_react8.createElement)(BotRow, { ...rowProps, bot: main, marked: markedUnread[main.id] === true }) : roster.ready ? null : (0, import_react8.createElement)("div", { className: "bt-hint" }, t("Setting up your Main Bot…")),
-      order.map((entry) => entry.kind === "bot" ? (0, import_react8.createElement)(BotRow, { key: entry.item.id, ...rowProps, bot: entry.item, marked: markedUnread[entry.item.id] === true }) : entry.kind === "room" ? (0, import_react8.createElement)(RoomRow, { key: entry.item.id, ...rowProps, room: entry.item, marked: markedUnread[entry.item.id] === true }) : (0, import_react8.createElement)(AgentRow, { key: entry.item.id, ...rowProps, agent: entry.item, marked: markedUnread[entry.item.id] === true }))
+      { className: wide ? "bt-side" : "bt-side bt-rail", "data-mobile-open": mobileOpen || void 0, role: "navigation", "aria-label": t("Team navigation"), "aria-hidden": !wide && !mobileOpen ? true : void 0, inert: !wide && !mobileOpen ? "" : void 0, onKeyDown: typeToSearch },
+      (0, import_react8.createElement)(
+        "div",
+        { className: "bt-mobile-side-head" },
+        (0, import_react8.createElement)("span", { className: "bt-brand" }, (0, import_react8.createElement)(BrandMark, { size: 22 }), (0, import_react8.createElement)(BrandName)),
+        (0, import_react8.createElement)("button", { type: "button", className: "bt-icon-btn", "aria-label": t("Close navigation"), onClick: actions.closeMobileNav }, (0, import_react8.createElement)(CloseIcon))
+      ),
+      wide ? (0, import_react8.createElement)(
+        "div",
+        { className: "bt-side-top" },
+        (0, import_react8.createElement)("span", { className: "bt-brand" }, (0, import_react8.createElement)(BrandMark, { size: 22 }), (0, import_react8.createElement)(BrandName)),
+        (0, import_react8.createElement)(UpdateButton, { useUpdate: props.useUpdate, actions }),
+        (0, import_react8.createElement)("button", { type: "button", className: "bt-round", "aria-label": t("Search"), title: t("Search"), onClick: () => actions.openPalette() }, (0, import_react8.createElement)(SearchIcon)),
+        (0, import_react8.createElement)("button", { type: "button", className: "bt-round", "aria-label": t("New…"), title: t("New…"), onClick: () => actions.openNewChat("new") }, (0, import_react8.createElement)(PlusIcon))
+      ) : (0, import_react8.createElement)(
+        import_react8.Fragment,
+        null,
+        (0, import_react8.createElement)(UpdateButton, { useUpdate: props.useUpdate, actions }),
+        (0, import_react8.createElement)("button", { type: "button", className: "bt-round", "aria-label": t("New…"), title: t("New…"), onClick: () => actions.openNewChat("new") }, (0, import_react8.createElement)(PlusIcon))
+      ),
+      (0, import_react8.createElement)(
+        "div",
+        { className: "bt-mobile-actions" },
+        (0, import_react8.createElement)("button", { type: "button", className: "bt-mobile-action", onClick: () => actions.openPalette() }, (0, import_react8.createElement)(SearchIcon), t("Search")),
+        (0, import_react8.createElement)("button", { type: "button", className: "bt-mobile-action", onClick: () => actions.openNewChat("new") }, (0, import_react8.createElement)(PlusIcon), t("New chat"))
+      ),
+      wide && roster.readOnly ? (0, import_react8.createElement)("div", { className: "bt-hint bt-read-only", role: "status" }, hostText(roster.readOnly)) : null,
+      (0, import_react8.createElement)(
+        "div",
+        { ref: listRef, className: "bt-list", role: "region", "aria-label": t("Bot list") },
+        main ? (0, import_react8.createElement)(BotRow, { ...rowProps, bot: main, marked: markedUnread[main.id] === true }) : roster.ready ? null : (0, import_react8.createElement)("div", { className: "bt-hint" }, t("Setting up your Main Bot…")),
+        order.map((entry) => entry.kind === "bot" ? (0, import_react8.createElement)(BotRow, { key: entry.item.id, ...rowProps, bot: entry.item, marked: markedUnread[entry.item.id] === true }) : entry.kind === "room" ? (0, import_react8.createElement)(RoomRow, { key: entry.item.id, ...rowProps, room: entry.item, marked: markedUnread[entry.item.id] === true }) : (0, import_react8.createElement)(AgentRow, { key: entry.item.id, ...rowProps, agent: entry.item, marked: markedUnread[entry.item.id] === true }))
+      ),
+      (0, import_react8.createElement)("div", { className: "bt-mobile-side-foot" }, (0, import_react8.createElement)(AccountLauncher, { ...props, seat: false }))
     )
   );
 }
@@ -5185,6 +5341,7 @@ function HeaderPill({ sessionId, useRoster, useSessions, useSessionStatus, useAc
   return (0, import_react9.createElement)(
     "div",
     { className: "bt-head" },
+    (0, import_react9.createElement)("button", { type: "button", className: "bt-mobile-nav", "aria-label": t("Open navigation"), onClick: actions.toggleMobileNav }, (0, import_react9.createElement)(MenuIcon)),
     (0, import_react9.createElement)(
       "button",
       {
@@ -6039,15 +6196,32 @@ function ModelMenu({ bot, roster, actions, run, wide = false, onPick, onPickEffo
       (0, import_react13.createElement)("svg", { className: "bt-model-caret", width: 12, height: 12, viewBox: "0 0 20 20", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true }, (0, import_react13.createElement)("path", { d: "M5.5 8l4.5 4.5L14.5 8" }))
     ),
     shownPlace ? (0, import_react_dom6.createPortal)((0, import_react13.createElement)(
-      "div",
-      { ref: menu, className: `bt-menu bt-model-menu${shownPlace.bottom !== void 0 ? " bt-menu-up" : ""}`, role: "menu", "aria-label": t("Model for {name}", { name: bot.name }), style: shownPlace, "data-leaving": leaving || void 0 },
-      models.length > 0 ? (0, import_react13.createElement)(ModelRows, { roster, current, onPick: pick2 }) : (0, import_react13.createElement)("div", { className: "bt-model-none" }, t("No models are set up in DeepSeek Harness yet.")),
-      effortRows(reasoning).length > 0 ? (0, import_react13.createElement)(EffortRows, { reasoning, current: picked, onPick: pickEffort }) : null,
-      (0, import_react13.createElement)("div", { className: "bt-menu-sep", role: "separator" }),
-      (0, import_react13.createElement)("button", { type: "button", role: "menuitem", onClick: () => {
-        close();
-        openHarnessSettings();
-      } }, (0, import_react13.createElement)(SlidersIcon), (0, import_react13.createElement)("span", { className: "bt-menu-label" }, t("Models and providers…")))
+      import_react13.Fragment,
+      null,
+      (0, import_react13.createElement)("button", { type: "button", className: "bt-model-scrim", "aria-label": t("Close"), onClick: close, "data-leaving": leaving || void 0 }),
+      (0, import_react13.createElement)(
+        "div",
+        { ref: menu, className: `bt-menu bt-model-menu${shownPlace.bottom !== void 0 ? " bt-menu-up" : ""}`, role: "menu", "aria-label": t("Model for {name}", { name: bot.name }), style: shownPlace, "data-leaving": leaving || void 0 },
+        (0, import_react13.createElement)(
+          "div",
+          { className: "bt-model-mobile-head", role: "presentation" },
+          (0, import_react13.createElement)("span", { className: "bt-model-mobile-bot" }, (0, import_react13.createElement)(BotMark, { bot, size: 28 })),
+          (0, import_react13.createElement)(
+            "span",
+            { className: "bt-model-mobile-copy" },
+            (0, import_react13.createElement)("strong", null, t("Model for {name}", { name: bot.name })),
+            (0, import_react13.createElement)("span", null, shown?.name ?? t("Choose a model"))
+          ),
+          (0, import_react13.createElement)("button", { type: "button", className: "bt-model-mobile-close", "aria-label": t("Close"), onClick: close }, (0, import_react13.createElement)(CloseIcon))
+        ),
+        models.length > 0 ? (0, import_react13.createElement)(ModelRows, { roster, current, onPick: pick2 }) : (0, import_react13.createElement)("div", { className: "bt-model-none" }, t("No models are set up in DeepSeek Harness yet.")),
+        effortRows(reasoning).length > 0 ? (0, import_react13.createElement)(EffortRows, { reasoning, current: picked, onPick: pickEffort }) : null,
+        (0, import_react13.createElement)("div", { className: "bt-menu-sep", role: "separator" }),
+        (0, import_react13.createElement)("button", { type: "button", role: "menuitem", onClick: () => {
+          close();
+          openHarnessSettings();
+        } }, (0, import_react13.createElement)(SlidersIcon), (0, import_react13.createElement)("span", { className: "bt-menu-label" }, t("Models and providers…")))
+      )
     ), document.body) : null
   );
 }
@@ -6154,6 +6328,7 @@ var MODEL_CSS = `
 .bt-model-caret{flex:none;color:var(--bt-ink-3);transition:${spring(SPRING_SHAPE, "transform")}}
 .bt-model-trigger[aria-expanded=true] .bt-model-caret{transform:rotate(180deg)}
 .bt-model-menu{overflow-y:auto;scrollbar-width:thin}
+.bt-model-scrim,.bt-model-mobile-head{display:none}
 .bt-model-group{flex:none;padding:8px 8px 2px;font-size:11px;line-height:14px;font-weight:500;color:var(--bt-ink-3);text-transform:none}
 .bt-model-group:first-child{padding-top:2px}
 .bt-model-tick{flex:none;width:16px;height:16px;display:inline-flex;color:var(--bt-ink-2)}
@@ -6172,6 +6347,23 @@ var MODEL_CSS = `
 .bt-model-chip:disabled{cursor:default}
 .bt-model-chip:disabled:not([aria-busy]){opacity:.5}
 .bt-model-error{margin-left:30px}
+@media (max-width:700px){
+.bt-model-scrim{display:block;position:fixed;inset:var(--dsh-frame-chrome-top,0px) 0 0;z-index:88;border:0;padding:0;background:rgba(0,0,0,.5);animation:bt-fade-in .16s ease-out}
+.bt-model-scrim[data-leaving]{opacity:0;transition:opacity .12s ease-in}
+.bt-model-menu,.bt-model-menu.bt-menu-up{position:fixed;z-index:89;left:0!important;right:0!important;top:auto!important;bottom:0!important;width:100%!important;max-width:none;max-height:min(72vh,620px)!important;box-sizing:border-box;padding:8px 10px calc(10px + env(safe-area-inset-bottom));border:0;border-top:.5px solid var(--bt-line-2);border-radius:22px 22px 0 0;box-shadow:0 -18px 48px rgba(0,0,0,.24);overflow-x:hidden;transform:none;transform-origin:bottom center;animation:bt-model-sheet-in ${SPRING_SHAPE.duration}ms ${SPRING_SHAPE.easing},bt-veil-in .16s ease-out}
+.bt-model-menu[data-leaving]{animation:bt-model-sheet-out .12s ease-in forwards}
+.bt-model-mobile-head{position:sticky;top:-8px;z-index:1;display:flex;align-items:center;gap:10px;min-height:58px;margin:-2px -2px 6px;padding:6px 4px 8px;background:var(--bt-main);border-bottom:.5px solid var(--bt-line)}
+.bt-model-mobile-bot{display:inline-flex;flex:none}
+.bt-model-mobile-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:1px}
+.bt-model-mobile-copy strong{overflow:hidden;font-size:16px;line-height:22px;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+.bt-model-mobile-copy>span{overflow:hidden;font-size:12px;line-height:16px;color:var(--bt-ink-3);text-overflow:ellipsis;white-space:nowrap}
+.bt-model-menu .bt-model-mobile-close{display:inline-flex;align-items:center;justify-content:center;flex:none;width:40px;min-width:40px;height:40px;min-height:40px;padding:0;border:0;border-radius:50%;background:var(--bt-hover);color:var(--bt-ink-2)}
+.bt-model-menu>.bt-model-group{padding:12px 10px 5px;font-size:12px}
+.bt-model-menu>button[role=menuitemradio],.bt-model-menu>button[role=menuitem]{min-height:48px;padding:10px 12px;border-radius:12px;font-size:15px}
+.bt-model-menu .bt-model-tick{width:20px;height:20px}
+@keyframes bt-model-sheet-in{from{translate:0 100%}}
+@keyframes bt-model-sheet-out{to{translate:0 100%;opacity:.7}}
+}
 @keyframes bt-model-in{from{opacity:0;transform:translateY(6px)}}
 .bt-model-spin{flex:none;width:14px;height:14px;border-radius:50%;border:1.5px solid var(--bt-line-2);border-top-color:var(--bt-ink-2);animation:bt-model-spin .7s linear infinite}
 @keyframes bt-model-spin{to{transform:rotate(360deg)}}
@@ -6503,6 +6695,12 @@ var SCHEDULE_CSS = `
 .bt-task-line svg{flex:none;color:var(--bt-ink-3)}
 .bt-task-line-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bt-task-line-when{flex:none;font-size:12px;color:var(--bt-ink-3)}
+@media (max-width:700px){
+.bt-task-bot{min-width:0;max-width:56%;font-size:16px}
+.bt-task-days{width:100%;justify-content:space-between;gap:2px}
+.bt-task-day{width:36px;height:36px}
+.bt-task-foot .bt-send{min-height:40px;padding:0 16px}
+}
 @media (prefers-reduced-motion:reduce){.bt-task-form{animation:none}}
 `;
 
@@ -6834,8 +7032,13 @@ function MemoryDialog({ bot, actions, leaving = false }) {
         "div",
         { className: "bt-mem-head" },
         page === "entries" ? (0, import_react15.createElement)("button", { type: "button", className: "bt-icon-btn", "aria-label": t("Back to the summary"), onClick: backToSummary }, (0, import_react15.createElement)(ChevronLeftIcon)) : null,
-        (0, import_react15.createElement)("h2", null, page === "entries" ? t("All entries") : t("Memory summary")),
-        (0, import_react15.createElement)("span", { className: "bt-mem-status" }, page === "summary" ? [bot.name, status].filter(Boolean).join(" · ") : status),
+        (0, import_react15.createElement)("span", { className: "bt-mem-mobile-bot", "aria-hidden": true }, (0, import_react15.createElement)(BotMark, { bot, size: 30 })),
+        (0, import_react15.createElement)(
+          "div",
+          { className: "bt-mem-heading" },
+          (0, import_react15.createElement)("h2", null, page === "entries" ? t("All entries") : t("Memory summary")),
+          (0, import_react15.createElement)("span", { className: "bt-mem-status" }, page === "summary" ? [bot.name, status].filter(Boolean).join(" · ") : status)
+        ),
         (0, import_react15.createElement)("span", { className: "bt-mem-head-gap" }),
         (0, import_react15.createElement)("button", { ref: dotsRef, type: "button", className: "bt-icon-btn", "aria-label": t("Memory options"), "aria-haspopup": "menu", "aria-expanded": menu, onClick: () => setMenu((value) => !value) }, (0, import_react15.createElement)(DotsIcon)),
         (0, import_react15.createElement)("button", { type: "button", className: "bt-icon-btn", "aria-label": t("Close memory"), onClick: close }, (0, import_react15.createElement)(CloseIcon)),
@@ -7275,6 +7478,11 @@ label.bt-bs-row{cursor:text}
 .bt-switch:active:not(:disabled) .bt-switch-knob{width:21px}
 .bt-switch[aria-checked=true]:active:not(:disabled) .bt-switch-knob{transform:translateX(11px)}
 .bt-avedit :is(.bt-shapes,.bt-colors,.bt-dropzone){animation:bt-veil-in .18s ease-out}
+@media (max-width:700px){
+.bt-bs-row .bt-model-trigger{max-width:54%}
+.bt-bs-input{flex-basis:48%;min-width:112px;font-size:16px}
+.bt-bs-area{width:auto;min-width:0}
+}
 @media (prefers-reduced-motion:reduce){.bt-switch,.bt-switch-knob{transition:none}.bt-avedit :is(.bt-shapes,.bt-colors,.bt-dropzone){animation:none}}
 `;
 
@@ -9221,6 +9429,19 @@ button.bt-us-row:hover{background:var(--bt-hover)}
 @keyframes bt-us-ring{from{stroke-dasharray:0 ${Math.ceil(RING)}}}
 @keyframes bt-us-pulse{50%{opacity:.25}}
 @keyframes bt-us-shine{from{background-position:200% 0}to{background-position:-200% 0}}
+@media (max-width:700px){
+.bt-us-stats{grid-template-columns:1fr 1fr}
+.bt-us-stat{padding:14px}
+.bt-us-stat:nth-child(3){border-left:0}
+.bt-us-stat:nth-child(n+3){border-top:1px solid var(--bt-line)}
+.bt-us-stat-main .bt-us-stat-value{font-size:28px;line-height:34px}
+.bt-us-pair{grid-template-columns:1fr}
+.bt-us-card{padding:13px 12px 15px}
+.bt-us-profile{gap:14px}
+.bt-us-ring{width:78px;height:78px}
+.bt-us-plot,.bt-us-ticks{margin-left:32px}
+.bt-us-heat-months,.bt-us-heat-grid{gap:2px}
+}
 @media (prefers-reduced-motion:reduce){.bt-us *,.bt-us *::before{animation:none!important;transition:none!important}}
 `;
 
@@ -11763,7 +11984,7 @@ function apply(ctx) {
   } catch {
     seenAt = {};
   }
-  const ui = createSource({ details: null, view: "details", renaming: false, tab: null, newChat: null, exchange: null, menu: null, voice: null, palette: null, quote: null, settings: null, memory: null, toast: null, signIn: null, renameAgent: null, unread: savedUnread, reactions: savedReactions, visits: {} });
+  const ui = createSource({ details: null, view: "details", renaming: false, tab: null, newChat: null, exchange: null, menu: null, voice: null, palette: null, quote: null, settings: null, memory: null, mobileNav: false, toast: null, signIn: null, renameAgent: null, unread: savedUnread, reactions: savedReactions, visits: {} });
   const surface = createSource({ mode: readMode(), plain: false });
   let agentSessionCache = /* @__PURE__ */ new Set();
   try {
@@ -12071,7 +12292,7 @@ function apply(ctx) {
     isAgentSession: (id) => isAgentSessionId(id),
     openSession: (id) => {
       if (isAgentSessionId(id)) return actions.openAgentSession(id);
-      ui.set((state) => state.newChat || state.exchange || state.menu || state.palette ? { ...state, newChat: null, exchange: null, menu: null, palette: null } : state);
+      ui.set((state) => state.newChat || state.exchange || state.menu || state.palette || state.mobileNav ? { ...state, newChat: null, exchange: null, menu: null, palette: null, mobileNav: false } : state);
       setPlain(false);
       const target = partFor(id);
       expected = target;
@@ -12080,7 +12301,7 @@ function apply(ctx) {
     // The conversation replacements withdraw for a plain Session; set the surface
     // before the navigation so the Bot skin never flashes.
     openAgentSession: (sessionId) => {
-      ui.set((state) => ({ ...state, newChat: null, exchange: null, menu: null, palette: null, details: null, view: "details", renaming: false, tab: null }));
+      ui.set((state) => ({ ...state, newChat: null, exchange: null, menu: null, palette: null, mobileNav: false, details: null, view: "details", renaming: false, tab: null }));
       setPlain(true);
       expected = sessionId;
       ctx.uiWorkspace.openSession(sessionId);
@@ -12148,10 +12369,10 @@ function apply(ctx) {
       ctx.layout.selectPanel(id);
     },
     openNewChat: (mode) => {
-      ui.set((state) => ({ ...state, newChat: mode, menu: null, palette: null }));
+      ui.set((state) => ({ ...state, newChat: mode, menu: null, palette: null, mobileNav: false }));
     },
     openPalette: (query = "") => {
-      ui.set((state) => ({ ...state, palette: { query, token: Date.now() }, newChat: null, menu: null }));
+      ui.set((state) => ({ ...state, palette: { query, token: Date.now() }, newChat: null, menu: null, mobileNav: false }));
     },
     // The token keeps a late exit timer from closing a palette opened again since.
     closePalette: (token) => {
@@ -12190,7 +12411,7 @@ function apply(ctx) {
     },
     // `id` opens one Bot (page 'bots') or one group chat (page 'groups').
     openSettings: (page = "general", id = null) => {
-      ui.set((state) => ({ ...state, settings: { page, id }, menu: null, palette: null, newChat: null }));
+      ui.set((state) => ({ ...state, settings: { page, id }, menu: null, palette: null, newChat: null, mobileNav: false }));
     },
     closeSettings: () => {
       ui.set((state) => state.settings ? { ...state, settings: null } : state);
@@ -12202,7 +12423,13 @@ function apply(ctx) {
       ui.set((state) => state.memory ? { ...state, memory: null } : state);
     },
     openConnectors: () => {
-      ui.set((state) => ({ ...state, settings: { page: "connectors", id: null }, menu: null, palette: null, newChat: null }));
+      ui.set((state) => ({ ...state, settings: { page: "connectors", id: null }, menu: null, palette: null, newChat: null, mobileNav: false }));
+    },
+    toggleMobileNav: () => {
+      ui.set((state) => ({ ...state, mobileNav: !state.mobileNav, menu: null, palette: null }));
+    },
+    closeMobileNav: () => {
+      ui.set((state) => state.mobileNav ? { ...state, mobileNav: false } : state);
     },
     // Agent mode hands the surface back to the shell; everything open on the Bot
     // surface closes first so nothing stale reopens on the way back.
@@ -12210,7 +12437,7 @@ function apply(ctx) {
       if (mode !== "bot" && mode !== "agent") return;
       if (surface.getSnapshot().mode === mode) return;
       if (mode === "agent") {
-        ui.set((state) => ({ ...state, details: null, view: "details", settings: null, palette: null, newChat: null, menu: null, voice: null, exchange: null, memory: null, toast: null }));
+        ui.set((state) => ({ ...state, details: null, view: "details", settings: null, palette: null, newChat: null, menu: null, voice: null, exchange: null, memory: null, mobileNav: false, toast: null }));
       }
       writeMode(mode);
       surface.set((state) => ({ ...state, mode }));

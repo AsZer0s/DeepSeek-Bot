@@ -281,5 +281,10 @@ label.bt-bs-row{cursor:text}
 .bt-switch:active:not(:disabled) .bt-switch-knob{width:21px}
 .bt-switch[aria-checked=true]:active:not(:disabled) .bt-switch-knob{transform:translateX(11px)}
 .bt-avedit :is(.bt-shapes,.bt-colors,.bt-dropzone){animation:bt-veil-in .18s ease-out}
+@media (max-width:700px){
+.bt-bs-row .bt-model-trigger{max-width:54%}
+.bt-bs-input{flex-basis:48%;min-width:112px;font-size:16px}
+.bt-bs-area{width:auto;min-width:0}
+}
 @media (prefers-reduced-motion:reduce){.bt-switch,.bt-switch-knob{transition:none}.bt-avedit :is(.bt-shapes,.bt-colors,.bt-dropzone){animation:none}}
 `

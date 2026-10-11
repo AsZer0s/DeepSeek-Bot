@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { FishLogo } from '@deepseek-ai/dsh-client-ui-primitives'
 import { isMainOf } from './sources.js'
 import { currentPart, previewOf, relativeShort } from './text.js'
-import { PlusIcon, SearchIcon, GaugeIcon, PlugIcon, ClockIcon, GearIcon, PinMarkIcon, ConnectorIcon, SwitchIcon, CloudDownloadIcon } from './icons.js'
+import { PlusIcon, SearchIcon, GaugeIcon, PlugIcon, ClockIcon, GearIcon, PinMarkIcon, ConnectorIcon, SwitchIcon, CloudDownloadIcon, CloseIcon } from './icons.js'
 import { MAIN_LOOK } from './characters.js'
 import { botState, BotMark, BotAvatar, RoomAvatar } from './mark.js'
 import { reducedMotion } from './activity-row.js'
@@ -22,7 +22,7 @@ function useMarkedUnread(id, active, marked, actions) {
 
 const PinMark = () => h('span', { className: 'bt-pin', 'aria-hidden': true }, h(PinMarkIcon))
 
-function BotRow({ bot, roster, actions, useSessions, useSessionStatus, useSessionRetainInfo, useActivity, wide, marked }) {
+function BotRow({ bot, roster, actions, useSessions, useSessionStatus, useSessionRetainInfo, useActivity, wide, mobile = false, marked }) {
   const id = bot.id
   const part = currentPart(bot)
   const preview = useSessions(list => previewOf(list, part, roster.exchangeTurns[part]))
@@ -42,7 +42,7 @@ function BotRow({ bot, roster, actions, useSessions, useSessionStatus, useSessio
   }
   const pinned = bot.pinned === true && !tile
   const label = [bot.name, main ? t('Main Bot') : '', pinned ? t('Pinned') : '', running ? t('Working') : '', alert ? t('Waiting for your answer') : '', unread ? t('Unread activity') : ''].filter(Boolean).join(', ')
-  if (tile && wide) {
+  if (tile && wide && !mobile) {
     return h('div', { className: 'bt-tile-wrap' }, h('button', {
       type: 'button', className: 'bt-tile', 'aria-label': label, 'aria-current': active ? 'page' : undefined,
       'data-bot-id': id, title: preview || bot.name, onClick: () => actions.openSession(id), onContextMenu,
@@ -213,6 +213,7 @@ export function TeamSidebar(props) {
   const { wide, useRoster, useUi, useSessions, actions } = props
   const listRef = useRef(null)
   const roster = useRoster(value => value)
+  const mobileOpen = useUi(value => value.mobileNav === true)
   const markedUnread = useUi(value => value.unread)
   props.useRegistry(value => value)
   const updated = useSessions(list => {
@@ -231,9 +232,10 @@ export function TeamSidebar(props) {
     return entries.sort((a, b) => Number(Boolean(b.item.pinned)) - Number(Boolean(a.item.pinned)) || b.at - a.at)
   }, [roster, updated])
   const main = roster.byId[roster.mainBotId]
-  useListGlide(listRef, wide, order.map(entry => entry.item.id).join(','))
+  const listWide = wide || mobileOpen
+  useListGlide(listRef, listWide, order.map(entry => entry.item.id).join(','))
   useLandOnMainBot(roster, useSessions, actions)
-  const rowProps = { roster, actions, useSessions, useUi, useSessionStatus: props.useSessionStatus, useSessionRetainInfo: props.useSessionRetainInfo, useActivity: props.useActivity, wide }
+  const rowProps = { roster, actions, useSessions, useUi, useSessionStatus: props.useSessionStatus, useSessionRetainInfo: props.useSessionRetainInfo, useActivity: props.useActivity, wide: listWide, mobile: !wide && mobileOpen }
   // Typing while the sidebar has focus starts a search.
   const typeToSearch = (event) => {
     if (event.defaultPrevented || event.key.length !== 1 || event.key === ' ' || event.metaKey || event.ctrlKey || event.altKey || event.nativeEvent.isComposing) return
@@ -241,7 +243,12 @@ export function TeamSidebar(props) {
     event.preventDefault()
     actions.openPalette(event.key)
   }
-  return h('div', { className: wide ? 'bt-side' : 'bt-side bt-rail', onKeyDown: typeToSearch },
+  return h(Fragment, null,
+    createPortal(h('button', { type: 'button', className: 'bt-mobile-scrim', 'data-open': mobileOpen || undefined, 'aria-label': t('Close navigation'), tabIndex: mobileOpen ? 0 : -1, onClick: actions.closeMobileNav }), document.body),
+    h('div', { className: wide ? 'bt-side' : 'bt-side bt-rail', 'data-mobile-open': mobileOpen || undefined, role: 'navigation', 'aria-label': t('Team navigation'), 'aria-hidden': !wide && !mobileOpen ? true : undefined, inert: !wide && !mobileOpen ? '' : undefined, onKeyDown: typeToSearch },
+    h('div', { className: 'bt-mobile-side-head' },
+      h('span', { className: 'bt-brand' }, h(BrandMark, { size: 22 }), h(BrandName)),
+      h('button', { type: 'button', className: 'bt-icon-btn', 'aria-label': t('Close navigation'), onClick: actions.closeMobileNav }, h(CloseIcon))),
     wide ? h('div', { className: 'bt-side-top' },
       h('span', { className: 'bt-brand' }, h(BrandMark, { size: 22 }), h(BrandName)),
       h(UpdateButton, { useUpdate: props.useUpdate, actions }),
@@ -250,6 +257,9 @@ export function TeamSidebar(props) {
       : h(Fragment, null,
           h(UpdateButton, { useUpdate: props.useUpdate, actions }),
           h('button', { type: 'button', className: 'bt-round', 'aria-label': t('New…'), title: t('New…'), onClick: () => actions.openNewChat('new') }, h(PlusIcon))),
+    h('div', { className: 'bt-mobile-actions' },
+      h('button', { type: 'button', className: 'bt-mobile-action', onClick: () => actions.openPalette() }, h(SearchIcon), t('Search')),
+      h('button', { type: 'button', className: 'bt-mobile-action', onClick: () => actions.openNewChat('new') }, h(PlusIcon), t('New chat'))),
     wide && roster.readOnly ? h('div', { className: 'bt-hint bt-read-only', role: 'status' }, hostText(roster.readOnly)) : null,
     h('div', { ref: listRef, className: 'bt-list', role: 'region', 'aria-label': t('Bot list') },
       main ? h(BotRow, { ...rowProps, bot: main, marked: markedUnread[main.id] === true }) : roster.ready ? null : h('div', { className: 'bt-hint' }, t('Setting up your Main Bot…')),
@@ -257,7 +267,8 @@ export function TeamSidebar(props) {
         ? h(BotRow, { key: entry.item.id, ...rowProps, bot: entry.item, marked: markedUnread[entry.item.id] === true })
         : entry.kind === 'room'
           ? h(RoomRow, { key: entry.item.id, ...rowProps, room: entry.item, marked: markedUnread[entry.item.id] === true })
-          : h(AgentRow, { key: entry.item.id, ...rowProps, agent: entry.item, marked: markedUnread[entry.item.id] === true })))))
+          : h(AgentRow, { key: entry.item.id, ...rowProps, agent: entry.item, marked: markedUnread[entry.item.id] === true })))),
+    h('div', { className: 'bt-mobile-side-foot' }, h(AccountLauncher, { ...props, seat: false }))))
 }
 
 // The update button at the sidebar's top right: a cloud while a newer DS Bot —
